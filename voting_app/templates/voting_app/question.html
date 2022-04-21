@@ -1,0 +1,30 @@
+{% extends 'voting_app/base.html' %}
+
+{% block content %}
+
+<h1>Личный кабинет</h1>
+
+    <form method="post" action="{% url 'vote_app:add_question' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+            <input type="submit" value="Добавить вопрос к опросу">
+    </form>
+
+    <br>
+    <li><a href="{% url 'vote_app:personal_area_user' %}">Назад</a></li>
+    <li><a href="{% url 'vote_app:type_test' %}">Редактировать вопросы типа "ТЕСТ"</a></li>
+    <li><a href="{% url 'vote_app:type_answer' %}">Редактировать вопросы типа "ОТВЕТ"</a></li>
+    <br>
+<br>
+<br>
+<br>
+    <nav>
+    {% for key, value in dict.items %}
+        <h3>Вопросы к опросу: "{{ key }}"</h3>
+        {% for el in value %}
+            <p>{{ el }}</p>
+        {% endfor %}
+    </nav>
+
+{% endfor %}
+{% endblock %}

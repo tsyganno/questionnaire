@@ -1,0 +1,17 @@
+
+{% if user.is_authenticated %}
+    Вы вошли под логином:  {{ user.username }}
+
+    <form action="{% url 'vote_app:logout_user' %}" method="POST">
+        {% csrf_token %}
+        {{ form.id_vote }}
+        <button id="id_vote" type="submit">Выйти</button>
+    </form>
+{% else %}
+    <a href="{% url 'vote_app:authentication_user' %}">Зарегистрироваться</a>
+    <a href="{% url 'vote_app:login_user' %}">Войти</a>
+
+{% endif %}
+<br>
+<br>
+{% block content %}{% endblock %}
