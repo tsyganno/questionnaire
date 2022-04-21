@@ -2,24 +2,20 @@
 
 {% block content %}
 
-<h1>Личный кабинет</h1>
+<h3>Опросы:</h3>
+<br>
     <form method="post" action="{% url 'vote_app:add_vote' %}">
         {% csrf_token %}
         {{ form.as_p }}
             <input type="submit" value="Добавить опрос">
     </form>
 <br>
-<h2><a href="{% url 'vote_app:personal_area_user_question' %}">Перейти к вопросам опросов</a></h2>
-<h2><a href="{% url 'vote_app:type_question' %}">Добавить типы вопросов</a></h2>
+<li><a href="{% url 'vote_app:question' %}">Добавить вопрос к опросу</a></li>
 <br>
-<h3>Опросы:</h3>
 {% for vote in votes %}
-    <h4> - "{{ vote.title}}"</h4>
-    <p>Опрос создан {{ vote.published }}</p>
+    <h4>"{{ vote.title }}"</h4>
+    <h5>Описание: {{ vote.content }}</h5>
+    <br>
 {% endfor %}
-<br>
-<h3>Типы вопросов:</h3>
-{% for type in types %}
-    <h4> - "{{ type.name_type}}"</h4>
-{% endfor %}
+
 {% endblock %}

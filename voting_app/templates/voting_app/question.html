@@ -2,29 +2,22 @@
 
 {% block content %}
 
-<h1>Личный кабинет</h1>
 
+<h3>Вопросы:</h3>
+<br>
     <form method="post" action="{% url 'vote_app:add_question' %}">
         {% csrf_token %}
         {{ form.as_p }}
-            <input type="submit" value="Добавить вопрос к опросу">
+            <input type="submit" value="Добавить вопрос">
     </form>
-
-    <br>
-    <li><a href="{% url 'vote_app:personal_area_user' %}">Назад</a></li>
-    <li><a href="{% url 'vote_app:type_test' %}">Редактировать вопросы типа "ТЕСТ"</a></li>
-    <li><a href="{% url 'vote_app:type_answer' %}">Редактировать вопросы типа "ОТВЕТ"</a></li>
-    <br>
 <br>
+<li><a href="{% url 'vote_app:personal_area_user' %}">На предыдущую страницу</a></li>
 <br>
-<br>
-    <nav>
-    {% for key, value in dict.items %}
-        <h3>Вопросы к опросу: "{{ key }}"</h3>
-        {% for el in value %}
-            <p>{{ el }}</p>
-        {% endfor %}
-    </nav>
-
+{% for key, value in dict_vote.items %}
+    <h3>{{ key }}</h3>
+    {% for el in value %}
+        <h4>{{ el.name }}</h4>
+    {% endfor %}
 {% endfor %}
+
 {% endblock %}

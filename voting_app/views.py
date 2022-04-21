@@ -5,78 +5,33 @@ from django.db import IntegrityError  # Импортируем IntegrityError д
 from django.contrib.auth import login, logout, authenticate  # Добавляем функции login, logout и authenticate для входа, выхода и аутенфикации пользователя
 from rest_framework import generics
 from .serializers import UserSerializer
-from .models import Vote, Question, TypeQuestion, Choice
+from .models import Vote, QuestionType
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-from .forms import QuestionForm, VoteForm, TypeQuestionForm, ChoiceForm
+from .forms import VoteForm, QuestionTypeForm
 
 
-def type_question(request):
-    types = TypeQuestion.objects.all()[:5]
-    return render(request, 'voting_app/type_question.html', {'types': types})
-
-
-def type_answer(request):
-    answer_questions = Question.objects.filter(type__name_type='ответ')
-    answers = Choice.objects.filter(correct_answer=True)
-    return render(request, 'voting_app/answer_question.html', {'answers': answers, 'answer_questions': answer_questions})
-
-
-def type_test(request):
-    test_questions = Question.objects.filter(type__name_type='тест')
-    choices = Choice.objects.all()
-    answers = Choice.objects.filter(correct_answer=True)
-    dict_choices = {}
-    for question in test_questions:
-        for choice in choices:
-            if choice.question.name == question.name:
-                if choice.question.name not in dict_choices:
-                    dict_choices[question.name] = [choice.choice_text]
-                else:
-                    dict_choices[question.name].append(choice.choice_text)
-    return render(request, 'voting_app/test_question.html', {'dict_ch': dict_choices, 'questions': test_questions, 'answers': answers})
-
-
-def personal_area_user_question(request):
-    """Функция возвращает личный кабинет пользователя c вопросами к опросу"""
-    table = Question.objects.select_related('vote').all()
-    dict_all = {}
-    for question in table:
-        if question.vote.title not in dict_all:
-            dict_all[question.vote.title] = [question.name]
+def question(request):
+    questions = QuestionType.objects.all()
+    dict_vote = {}
+    for el in questions:
+        if el.vote.title not in dict_vote:
+            dict_vote[el.vote.title] = [el]
         else:
-            dict_all[question.vote.title].append(question.name)
-    return render(request, 'voting_app/question.html', {'dict': dict_all})
+            dict_vote[el.vote.title].append(el)
+    return render(request, 'voting_app/question.html', {'dict_vote': dict_vote})
 
 
-class AnswerCreateView(CreateView):
-    template_name = 'voting_app/answer_question.html'
-    form_class = ChoiceForm
-    success_url = reverse_lazy('vote_app:type_answer')
-
-
-class ChoiceCreateView(CreateView):
-    template_name = 'voting_app/test_question.html'
-    form_class = ChoiceForm
-    success_url = reverse_lazy('vote_app:type_test')
-
-
-class TypeQuestionCreateView(CreateView):
-    template_name = 'voting_app/type_question.html'
-    form_class = TypeQuestionForm
-    success_url = reverse_lazy('vote_app:type_question')
+class QuestionTypeCreateView(CreateView):
+    template_name = 'voting_app/question.html'
+    form_class = QuestionTypeForm
+    success_url = reverse_lazy('vote_app:question')
 
 
 class VoteCreateView(CreateView):
     template_name = 'voting_app/personal_area_user.html'
     form_class = VoteForm
     success_url = reverse_lazy('vote_app:personal_area_user')
-
-
-class QuestionCreateView(CreateView):
-    template_name = 'voting_app/question.html'
-    form_class = QuestionForm
-    success_url = reverse_lazy('vote_app:personal_area_user_question')
 
 
 class UserList(generics.ListCreateAPIView):
@@ -134,7 +89,6 @@ def logout_user(request):
 
 def personal_area_user(request):
     """Функция возвращает личный кабинет пользователя"""
-    types = TypeQuestion.objects.all()
     votes = Vote.objects.all()[:5]
-    return render(request, 'voting_app/personal_area_user.html', {'votes': votes, 'types': types})
+    return render(request, 'voting_app/personal_area_user.html', {'votes': votes})
 
