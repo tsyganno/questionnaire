@@ -5,10 +5,65 @@ from django.db import IntegrityError  # Импортируем IntegrityError д
 from django.contrib.auth import login, logout, authenticate  # Добавляем функции login, logout и authenticate для входа, выхода и аутенфикации пользователя
 from rest_framework import generics
 from .serializers import UserSerializer
-from .models import Vote, QuestionType
+from .models import Vote, QuestionType, Choice, ImageQuestion
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-from .forms import VoteForm, QuestionTypeForm
+from .forms import VoteForm, QuestionTypeForm, ChoiceForm, ImageQuestionForm, AudioQuestionForm
+from django.http import HttpResponseNotFound, HttpResponseServerError
+
+
+def custom_handler404(request, exception):
+    # Call when Http404 raised
+    return HttpResponseNotFound('Ресурс не найден!')
+
+
+def custom_handler500(request):
+    # Call when raised some python exception
+    return HttpResponseServerError('Ошибка сервера!')
+
+
+def audio_type(request):
+    return render(request, 'voting_app/audio_type.html')
+
+
+def image_type(request):
+    images = ImageQuestion.objects.filter(question__type_text=False, question__type_image=True, question__type_audio=False, question__type_video=False)
+    global_dict = {}
+    answer_dict = {}
+    for image in images:
+        vote = image.question.vote.title
+        question = image.question.name
+        answer = image.correct_answer_image
+        if question not in answer_dict:
+            answer_dict[question] = answer
+        if vote not in global_dict:
+            global_dict[vote] = global_dict.setdefault(vote, {})
+            if question not in global_dict[vote]:
+                global_dict[vote][question] = global_dict[vote].setdefault(question, [image.image])
+        else:
+            if question not in global_dict[vote]:
+                global_dict[vote][question] = global_dict[vote].setdefault(question, [image.image])
+            else:
+                global_dict[vote][question].append(image.image)
+    return render(request, 'voting_app/image_type.html', {'global_dict': global_dict, 'answer_dict': answer_dict})
+
+
+def text_type(request):
+    choices = Choice.objects.filter(question__type_text=True, question__type_image=False, question__type_audio=False, question__type_video=False)
+    global_dict = {}
+    for choice in choices:
+        vote = choice.question.vote.title
+        question = choice.question.name
+        if vote not in global_dict:
+            global_dict[vote] = global_dict.setdefault(vote, {})
+            if question not in global_dict[vote]:
+                global_dict[vote][question] = global_dict[vote].setdefault(question, [choice.choice_text])
+        else:
+            if question not in global_dict[vote]:
+                global_dict[vote][question] = global_dict[vote].setdefault(question, [choice.choice_text])
+            else:
+                global_dict[vote][question].append(choice.choice_text)
+    return render(request, 'voting_app/text_type.html', {'global_dict': global_dict})
 
 
 def question(request):
@@ -20,6 +75,24 @@ def question(request):
         else:
             dict_vote[el.vote.title].append(el)
     return render(request, 'voting_app/question.html', {'dict_vote': dict_vote})
+
+
+class AudioQuestionCreateView(CreateView):
+    template_name = 'voting_app/audio_type.html'
+    form_class = AudioQuestionForm
+    success_url = reverse_lazy('vote_app:audio_type')
+
+
+class ImageQuestionCreateView(CreateView):
+    template_name = 'voting_app/image_type.html'
+    form_class = ImageQuestionForm
+    success_url = reverse_lazy('vote_app:image_type')
+
+
+class ChoiceCreateView(CreateView):
+    template_name = 'voting_app/text_type.html'
+    form_class = ChoiceForm
+    success_url = reverse_lazy('vote_app:text_type')
 
 
 class QuestionTypeCreateView(CreateView):

@@ -34,7 +34,7 @@ class QuestionType(models.Model):
 
 class ImageQuestion(models.Model):
     question = models.ForeignKey('QuestionType', null=True, on_delete=models.PROTECT, verbose_name='Вопрос')
-    image = models.ImageField(upload_to='images/voting_app')
+    image = models.ImageField(upload_to='voting_app/static/images')
     correct_answer_image = models.CharField(max_length=50, verbose_name='Правильный ответ на графический вопрос')
 
     class Meta:
@@ -44,7 +44,7 @@ class ImageQuestion(models.Model):
 
 class AudioQuestion(models.Model):
     question = models.ForeignKey('QuestionType', null=True, on_delete=models.PROTECT, verbose_name='Вопрос')
-    audio = models.FileField(upload_to='audio/voting_app')
+    audio = models.FileField(upload_to='voting_app/static/audio')
     correct_answer_audio = models.CharField(max_length=50, verbose_name='Правильный ответ на аудио вопрос')
 
     class Meta:
@@ -54,7 +54,7 @@ class AudioQuestion(models.Model):
 
 class VideoQuestion(models.Model):
     question = models.ForeignKey('QuestionType', null=True, on_delete=models.PROTECT, verbose_name='Вопрос')
-    video = models.FileField(upload_to='video/voting_app')
+    video = models.FileField(upload_to='voting_app/static/video')
     correct_answer_video = models.CharField(max_length=50, verbose_name='Правильный ответ на видео вопрос')
 
     class Meta:

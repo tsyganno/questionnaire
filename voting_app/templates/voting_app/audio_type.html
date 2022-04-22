@@ -1,0 +1,18 @@
+{% extends 'voting_app/base.html' %}
+
+{% block content %}
+
+
+<h3>Аудио вопросы:</h3>
+<br>
+    <form method="post" enctype="multipart/form-data" action="{% url 'vote_app:add_audio' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+            <input type="submit" value="Добавить аудио и правильный ответ">
+    </form>
+<br>
+<li><a href="{% url 'vote_app:question' %}">На предыдущую страницу</a></li>
+<br>
+
+<br>
+{% endblock %}

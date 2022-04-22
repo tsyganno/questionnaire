@@ -13,8 +13,13 @@
 <br>
 <li><a href="{% url 'vote_app:personal_area_user' %}">На предыдущую страницу</a></li>
 <br>
+<li><a href="{% url 'vote_app:text_type' %}">Текстовые вопросы с ответами чек-бокс</a></li>
+<li><a href="{% url 'vote_app:image_type' %}">Графические вопросы</a></li>
+<li><a href="{% url 'vote_app:audio_type' %}">Аудио вопросы</a></li>
+<li><a href="#">Видео вопросы</a></li>
+<br>
 {% for key, value in dict_vote.items %}
-    <h3>{{ key }}</h3>
+    <h3>Опрос: "{{ key }}"</h3>
     {% for el in value %}
         <h4>{{ el.name }}</h4>
     {% endfor %}

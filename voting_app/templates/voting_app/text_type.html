@@ -1,0 +1,28 @@
+{% extends 'voting_app/base.html' %}
+
+{% block content %}
+
+
+<h3>Текстовые вопросы с ответами чек-бокс:</h3>
+<br>
+    <form method="post" action="{% url 'vote_app:add_choices' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+            <input type="submit" value="Добавить варианты ответов и выбрать из них правильный">
+    </form>
+<br>
+<li><a href="{% url 'vote_app:question' %}">На предыдущую страницу</a></li>
+<br>
+{% for key, value in global_dict.items %}
+    <h3>Опрос: "{{ key }}"</h3>
+    {% for key2, value2 in value.items %}
+        <h4>Вопрос: {{ key2 }}</h4>
+        {% for el in value2 %}
+            <h5>{{ el }}</h5>
+        {% endfor %}
+        <br>
+    {% endfor %}
+{% endfor %}
+<br>
+
+{% endblock %}
