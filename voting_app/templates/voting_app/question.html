@@ -16,7 +16,7 @@
 <li><a href="{% url 'vote_app:text_type' %}">Текстовые вопросы с ответами чек-бокс</a></li>
 <li><a href="{% url 'vote_app:image_type' %}">Графические вопросы</a></li>
 <li><a href="{% url 'vote_app:audio_type' %}">Аудио вопросы</a></li>
-<li><a href="#">Видео вопросы</a></li>
+<li><a href="{% url 'vote_app:video_type' %}">Видео вопросы</a></li>
 <br>
 {% for key, value in dict_vote.items %}
     <h3>Опрос: "{{ key }}"</h3>

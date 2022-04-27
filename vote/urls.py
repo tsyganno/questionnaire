@@ -15,8 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from voting_app.views import custom_handler404, custom_handler500
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+handler404 = custom_handler404
+handler500 = custom_handler500
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('voting_app.urls')),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

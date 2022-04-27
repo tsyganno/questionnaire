@@ -2,7 +2,6 @@
 
 {% block content %}
 
-
 <h3>Графические вопросы:</h3>
 <br>
     <form method="post" enctype="multipart/form-data" action="{% url 'vote_app:add_image' %}">
@@ -20,7 +19,7 @@
             {% if key2 == key3 %}
                 <h4>Вопрос: {{ key2 }}</h4>
                 {% for el in value2 %}
-                <img src="{{ el }}" >
+                <img src="{{ el.url }}">
                 {% endfor %}
                 <h5>Правильный ответ: {{ value3 }}</h5>
             {% endif %}

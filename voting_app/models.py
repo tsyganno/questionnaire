@@ -34,7 +34,7 @@ class QuestionType(models.Model):
 
 class ImageQuestion(models.Model):
     question = models.ForeignKey('QuestionType', null=True, on_delete=models.PROTECT, verbose_name='Вопрос')
-    image = models.ImageField(upload_to='voting_app/static/images')
+    image = models.ImageField(upload_to='voting_app/static/images/')
     correct_answer_image = models.CharField(max_length=50, verbose_name='Правильный ответ на графический вопрос')
 
     class Meta:

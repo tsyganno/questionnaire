@@ -1,8 +1,7 @@
 from django.urls import path
 from voting_app.views import authentication_user, login_user, logout_user, home, personal_area_user, UserList, \
     UserDetail, VoteCreateView, question, QuestionTypeCreateView, text_type, ChoiceCreateView, image_type, \
-    ImageQuestionCreateView, audio_type, AudioQuestionCreateView
-
+    ImageQuestionCreateView, audio_type, AudioQuestionCreateView, video_type, VideoQuestionCreateView
 
 app_name = 'vote_app'
 urlpatterns = [
@@ -24,6 +23,8 @@ urlpatterns = [
     path('personal_area/question/image_type/add_image/', ImageQuestionCreateView.as_view(), name='add_image'),
     path('personal_area/question/audio_type', audio_type, name='audio_type'),
     path('personal_area/question/audio_type/add_audio/', AudioQuestionCreateView.as_view(), name='add_audio'),
+    path('personal_area/question/video_type', video_type, name='video_type'),
+    path('personal_area/question/audio_type/add_video/', VideoQuestionCreateView.as_view(), name='add_video'),
 
 
     # api
@@ -31,3 +32,5 @@ urlpatterns = [
     path('api/list/<int:pk>/', UserDetail.as_view()),
 
 ]
+
+

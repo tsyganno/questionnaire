@@ -1,6 +1,18 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Vote, QuestionType, Choice, ImageQuestion, AudioQuestion
+from .models import Vote, QuestionType, Choice, ImageQuestion, AudioQuestion, VideoQuestion
+
+
+class VideoQuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = VideoQuestion
+
+        fields = ('question', 'video', 'correct_answer_video')
+
+    def __init__(self, *args, **kwargs):
+        super(VideoQuestionForm, self).__init__(*args, **kwargs)
+        self.fields['question'].queryset = QuestionType.objects.filter(type_text=False, type_image=False, type_audio=False, type_video=True)
 
 
 class AudioQuestionForm(forms.ModelForm):

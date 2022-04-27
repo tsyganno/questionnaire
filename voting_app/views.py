@@ -5,25 +5,67 @@ from django.db import IntegrityError  # Импортируем IntegrityError д
 from django.contrib.auth import login, logout, authenticate  # Добавляем функции login, logout и authenticate для входа, выхода и аутенфикации пользователя
 from rest_framework import generics
 from .serializers import UserSerializer
-from .models import Vote, QuestionType, Choice, ImageQuestion
+from .models import Vote, QuestionType, Choice, ImageQuestion, AudioQuestion, VideoQuestion
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-from .forms import VoteForm, QuestionTypeForm, ChoiceForm, ImageQuestionForm, AudioQuestionForm
+from .forms import VoteForm, QuestionTypeForm, ChoiceForm, ImageQuestionForm, AudioQuestionForm, VideoQuestionForm
 from django.http import HttpResponseNotFound, HttpResponseServerError
 
 
 def custom_handler404(request, exception):
-    # Call when Http404 raised
     return HttpResponseNotFound('Ресурс не найден!')
 
 
 def custom_handler500(request):
-    # Call when raised some python exception
     return HttpResponseServerError('Ошибка сервера!')
 
 
+def video_type(request):
+    videos = VideoQuestion.objects.filter(question__type_text=False, question__type_image=False, question__type_audio=False, question__type_video=True)
+    global_dict = {}
+    answer_dict = {}
+    for video in videos:
+        vote = video.question.vote.title
+        question = video.question.name
+        answer = video.correct_answer_video
+        if question not in answer_dict:
+            answer_dict[question] = answer
+        if vote not in global_dict:
+            global_dict[vote] = global_dict.setdefault(vote, {})
+            if question not in global_dict[vote]:
+                global_dict[vote][question] = global_dict[vote].setdefault(question, [video])
+            else:
+                global_dict[vote][question].append(video)
+        else:
+            if question not in global_dict[vote]:
+                global_dict[vote][question] = global_dict[vote].setdefault(question, [video])
+            else:
+                global_dict[vote][question].append(video)
+    return render(request, 'voting_app/video_type.html', {'global_dict': global_dict, 'answer_dict': answer_dict})
+
+
 def audio_type(request):
-    return render(request, 'voting_app/audio_type.html')
+    audios = AudioQuestion.objects.filter(question__type_text=False, question__type_image=False, question__type_audio=True, question__type_video=False)
+    global_dict = {}
+    answer_dict = {}
+    for audio in audios:
+        vote = audio.question.vote.title
+        question = audio.question.name
+        answer = audio.correct_answer_audio
+        if question not in answer_dict:
+            answer_dict[question] = answer
+        if vote not in global_dict:
+            global_dict[vote] = global_dict.setdefault(vote, {})
+            if question not in global_dict[vote]:
+                global_dict[vote][question] = global_dict[vote].setdefault(question, [audio])
+            else:
+                global_dict[vote][question].append(audio)
+        else:
+            if question not in global_dict[vote]:
+                global_dict[vote][question] = global_dict[vote].setdefault(question, [audio])
+            else:
+                global_dict[vote][question].append(audio)
+    return render(request, 'voting_app/audio_type.html', {'global_dict': global_dict, 'answer_dict': answer_dict})
 
 
 def image_type(request):
@@ -40,11 +82,14 @@ def image_type(request):
             global_dict[vote] = global_dict.setdefault(vote, {})
             if question not in global_dict[vote]:
                 global_dict[vote][question] = global_dict[vote].setdefault(question, [image.image])
+            else:
+                global_dict[vote][question].append(image)
         else:
             if question not in global_dict[vote]:
                 global_dict[vote][question] = global_dict[vote].setdefault(question, [image.image])
             else:
-                global_dict[vote][question].append(image.image)
+                global_dict[vote][question].append(image)
+
     return render(request, 'voting_app/image_type.html', {'global_dict': global_dict, 'answer_dict': answer_dict})
 
 
@@ -75,6 +120,12 @@ def question(request):
         else:
             dict_vote[el.vote.title].append(el)
     return render(request, 'voting_app/question.html', {'dict_vote': dict_vote})
+
+
+class VideoQuestionCreateView(CreateView):
+    template_name = 'voting_app/video_type.html'
+    form_class = VideoQuestionForm
+    success_url = reverse_lazy('vote_app:video_type')
 
 
 class AudioQuestionCreateView(CreateView):
@@ -149,7 +200,6 @@ def login_user(request):
             return render(request, 'voting_app/login_user.html', {'form': AuthenticationForm(), 'error': 'Пользователя с таким паролем не существует.'})
         else:
             login(request, user)
-            print('ok')
             return redirect('vote_app:personal_area_user')
 
 
